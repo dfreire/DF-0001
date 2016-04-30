@@ -13,8 +13,6 @@ type SignupCustomerWithNewsletterRequestData struct {
 }
 
 func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewsletterRequestData) error {
-	// now := time.Now()
-
 	toFind := model.Customer{
 		Email: reqData.Email,
 	}
@@ -22,7 +20,6 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 	toCreate := model.Customer{
 		ID:    bson.NewObjectId().Hex(),
 		Email: reqData.Email,
-		// CreatedAt: now,
 	}
 
 	err := db.Where(toFind).FirstOrCreate(&toCreate).Error
@@ -31,9 +28,9 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 	}
 
 	toUpdate := model.Customer{
-		Name:   reqData.Name,
-		RoleId: reqData.RoleId,
-		// UpdatedAt: now,
+		Name:                 reqData.Name,
+		RoleId:               reqData.RoleId,
+		SignedUpToNewsletter: true,
 	}
 
 	return db.Model(&toUpdate).Updates(toUpdate).Error

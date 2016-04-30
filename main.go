@@ -35,20 +35,34 @@ func main() {
 
 	db.LogMode(true)
 	db.SingularTable(true)
-
 	model.Initialize(db)
 
 	tx := db.Begin()
-
 	err = commands.SignupCustomerWithNewsletter(tx, commands.SignupCustomerWithNewsletterRequestData{
 		Name:   "Joe Doe",
 		Email:  "joe.doe+1@mailinator.com",
 		RoleId: "wine_lover",
 	})
-
 	if err != nil {
 		tx.Rollback()
 	}
+	tx.Commit()
 
+	tx = db.Begin()
+	err = commands.SignupCustomerWithWineComment(tx, commands.SignupCustomerWithWineCommentRequestData{
+		Name:   "Joe Doe",
+		Email:  "joe.doe+2@mailinator.com",
+		RoleId: "restaurant",
+		WineComments: []commands.WineComment{
+			commands.WineComment{
+				WineId:   "wine-1",
+				WineYear: 2001,
+				Comment:  "fantastic",
+			},
+		},
+	})
+	if err != nil {
+		tx.Rollback()
+	}
 	tx.Commit()
 }
