@@ -22,7 +22,8 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 		Email: reqData.Email,
 	}
 
-	err := db.Where(toFind).FirstOrCreate(&toCreate).Error
+	customer := model.Customer{}
+	err := db.Where(toFind).Attrs(toCreate).FirstOrCreate(&customer).Error
 	if err != nil {
 		return err
 	}
@@ -33,5 +34,5 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 		SignedUpToNewsletter: true,
 	}
 
-	return db.Model(&toUpdate).Updates(toUpdate).Error
+	return db.Model(&customer).Updates(toUpdate).Error
 }

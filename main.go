@@ -4,10 +4,14 @@ import (
 	"log"
 	"strings"
 
-	"github.com/dfreire/df0001/commands"
+	"github.com/dfreire/df0001/handlers"
+	"github.com/dfreire/df0001/middleware"
 	"github.com/dfreire/df0001/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	echomiddleware "github.com/labstack/echo/middleware"
 	"github.com/spf13/viper"
 )
 
@@ -25,6 +29,8 @@ func init() {
 }
 
 func main() {
+	env := viper.Get("ENV").(string)
+
 	db, err := gorm.Open(
 		viper.Get("database.dialect").(string),
 		viper.Get("database.connectionString").(string),
@@ -33,36 +39,28 @@ func main() {
 		log.Fatalf("open connection to the database err: %+v", err)
 	}
 
-	db.LogMode(true)
 	db.SingularTable(true)
 	model.Initialize(db)
 
-	tx := db.Begin()
-	err = commands.SignupCustomerWithNewsletter(tx, commands.SignupCustomerWithNewsletterRequestData{
-		Name:   "Joe Doe",
-		Email:  "joe.doe+1@mailinator.com",
-		RoleId: "wine_lover",
-	})
-	if err != nil {
-		tx.Rollback()
-	}
-	tx.Commit()
+	e := echo.New()
 
-	tx = db.Begin()
-	err = commands.SignupCustomerWithWineComment(tx, commands.SignupCustomerWithWineCommentRequestData{
-		Name:   "Joe Doe",
-		Email:  "joe.doe+2@mailinator.com",
-		RoleId: "restaurant",
-		WineComments: []commands.WineComment{
-			commands.WineComment{
-				WineId:   "wine-1",
-				WineYear: 2001,
-				Comment:  "fantastic",
-			},
-		},
-	})
-	if err != nil {
-		tx.Rollback()
+	e.Use(echomiddleware.Gzip())
+	e.Use(echomiddleware.Recover())
+	e.Use(echomiddleware.Logger())
+
+	// withDatabase := middleware.WithDatabase(db)
+	withTransaction := middleware.WithTransaction(db)
+	withErrorLogging := middleware.ErrorLogging()
+
+	e.Post("/signup-customer-with-wine-comments", handlers.SignupCustomerWithWineComments, withErrorLogging, withTransaction)
+	e.Post("/signup-customer-with-newsletter", handlers.SignupCustomerWithNewsletter, withErrorLogging, withTransaction)
+
+	if env == "development" {
+		db.LogMode(true)
+		e.SetDebug(true)
 	}
-	tx.Commit()
+
+	port := viper.Get("httpServer.port").(string)
+	log.Printf("Running on port %s", port)
+	e.Run(standard.New(port))
 }
