@@ -30,9 +30,9 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 	}
 
 	toUpdate := model.Customer{
-		Name:                 reqData.Name,
-		RoleId:               reqData.RoleId,
-		SignedUpToNewsletter: true,
+		Name:            reqData.Name,
+		RoleId:          reqData.RoleId,
+		WantsNewsletter: true,
 	}
 
 	return db.Model(&customer).Updates(toUpdate).Error

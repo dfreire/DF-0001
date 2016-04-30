@@ -39,10 +39,6 @@ func main() {
 		log.Fatalf("open connection to the database err: %+v", err)
 	}
 
-	if viper.Get("database.dialect").(string) == "sqlite3" {
-	}
-	db.Exec("PRAGMA foreign_keys = ON;")
-	db.SingularTable(true)
 	model.Initialize(db)
 
 	e := echo.New()
