@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"labix.org/v2/mgo/bson"
-
+	"github.com/dfreire/df0001/commands"
+	"github.com/dfreire/df0001/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/spf13/viper"
@@ -33,21 +33,22 @@ func main() {
 		log.Fatalf("open connection to the database err: %+v", err)
 	}
 
+	db.LogMode(true)
 	db.SingularTable(true)
 
-	type User struct {
-		ID    string `gorm:"primary_key"`
-		Name  string
-		Email string
+	model.Initialize(db)
+
+	tx := db.Begin()
+
+	err = commands.SignupCustomerWithNewsletter(tx, commands.SignupCustomerWithNewsletterRequestData{
+		Name:   "Joe Doe",
+		Email:  "joe.doe+1@mailinator.com",
+		RoleId: "wine_lover",
+	})
+
+	if err != nil {
+		tx.Rollback()
 	}
 
-	db.AutoMigrate(&User{})
-
-	user := User{
-		ID:    bson.NewObjectId().Hex(),
-		Name:  "joe.doe",
-		Email: "joe.doe@example.com",
-	}
-
-	db.Create(&user)
+	tx.Commit()
 }
