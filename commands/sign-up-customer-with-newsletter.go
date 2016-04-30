@@ -18,8 +18,9 @@ func SignupCustomerWithNewsletter(db *gorm.DB, reqData SignupCustomerWithNewslet
 	}
 
 	toCreate := model.Customer{
-		ID:    bson.NewObjectId().Hex(),
-		Email: reqData.Email,
+		ID:     bson.NewObjectId().Hex(),
+		Email:  reqData.Email,
+		RoleId: reqData.RoleId,
 	}
 
 	customer := model.Customer{}

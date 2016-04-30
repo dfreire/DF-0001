@@ -25,8 +25,9 @@ func SignupCustomerWithWineComments(db *gorm.DB, reqData SignupCustomerWithWineC
 	}
 
 	toCreate := model.Customer{
-		ID:    bson.NewObjectId().Hex(),
-		Email: reqData.Email,
+		ID:     bson.NewObjectId().Hex(),
+		Email:  reqData.Email,
+		RoleId: reqData.RoleId,
 	}
 
 	customer := model.Customer{}

@@ -17,7 +17,7 @@ type Customer struct {
 	Name                 string
 	Email                string       `gorm:"not null;unique"`
 	Role                 CustomerRole `gorm:"ForeignKey:RoleId"`
-	RoleId               string       `gorm:"not null"`
+	RoleId               string       `sql:"type:varchar(255) NOT NULL REFERENCES customer_role(id)"`
 	SignedUpToNewsletter bool
 	InNewsletter         bool
 }
@@ -27,7 +27,7 @@ type WineComment struct {
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	Customer   Customer `gorm:"ForeignKey:CustomerId"`
-	CustomerId string   `gorm:"not null;unique_index:idx_wine_comment"`
+	CustomerId string   `sql:"type:varchar(255) NOT NULL REFERENCES customer(id),index:idx_wine_comment"`
 	WineId     string   `gorm:"not null;unique_index:idx_wine_comment"`
 	WineYear   int      `gorm:"not null;unique_index:idx_wine_comment"`
 	Comment    string   `gorm:"not null;size:5000"`
@@ -50,7 +50,7 @@ func getCustomerRoleIds() []string {
 		"restaurant",
 		"wine_distribution",
 		"wine_shop",
-		"sommelwine_lover",
+		"wine_lover",
 		"other",
 	}
 }
