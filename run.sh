@@ -1,5 +1,4 @@
 #!/bin/bash
-rm -rf demo.db
+rm -rf development.db
+export ENV="development"
 go run main.go
-sqlite3 demo.db ".schema"
-sqlite3 demo.db "select * from user"
