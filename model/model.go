@@ -7,30 +7,30 @@ import (
 )
 
 type CustomerRole struct {
-	ID string `gorm:"primary_key"`
+	ID string `gorm:"primary_key" json:"id"`
 }
 
 type Customer struct {
-	ID              string `gorm:"primary_key"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	Name            string
-	Email           string
-	Role            CustomerRole
-	RoleId          string
-	WantsNewsletter bool
-	InNewsletter    bool
+	ID              string       `gorm:"primary_key" json:"id"`
+	CreatedAt       time.Time    `json:"createdAt"`
+	UpdatedAt       time.Time    `json:"updatedAt"`
+	Name            string       `json:"name"`
+	Email           string       `json:"email"`
+	Role            CustomerRole `json:"role"`
+	RoleId          string       `json:"roleId"`
+	WantsNewsletter bool         `json:"wantsNewsletter"`
+	InNewsletter    bool         `json:"inNewsletter"`
 }
 
 type WineComment struct {
-	ID         string `gorm:"primary_key"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	Customer   Customer
-	CustomerId string
-	WineId     string
-	WineYear   int
-	Comment    string
+	ID         string    `gorm:"primary_key" json:"id"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+	Customer   Customer  `json:"customer"`
+	CustomerId string    `json:"customerId"`
+	WineId     string    `json:"wineId"`
+	WineYear   int       `json:"wineYear"`
+	Comment    string    `json:"comment"`
 }
 
 func Initialize(db *gorm.DB) {

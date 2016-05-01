@@ -47,12 +47,15 @@ func main() {
 	e.Use(echomiddleware.Recover())
 	e.Use(echomiddleware.Logger())
 
-	// withDatabase := middleware.WithDatabase(db)
+	withDatabase := middleware.WithDatabase(db)
 	withTransaction := middleware.WithTransaction(db)
 	withErrorLogging := middleware.ErrorLogging()
 
 	e.Post("/signup-customer-with-wine-comments", handlers.SignupCustomerWithWineComments, withErrorLogging, withTransaction)
 	e.Post("/signup-customer-with-newsletter", handlers.SignupCustomerWithNewsletter, withErrorLogging, withTransaction)
+
+	e.Get("/get-customers", handlers.GetCustomers, withErrorLogging, withDatabase)
+	e.Get("/get-wine-comments-by-customer-id", handlers.GetWineCommentsByCustomerId, withErrorLogging, withDatabase)
 
 	if env == "development" {
 		db.LogMode(true)
